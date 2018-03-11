@@ -190,14 +190,15 @@ def configure(conf):
         return
     else:
         def getVersion():
-            out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
-                                    "try:\n"
-                                    "  import pybindgen.version\n"
-                                    "  print(pybindgen.__version__)\n"
-                                    "except:\n"
-                                    "  pass"],
-                                    stdout=subprocess.PIPE).communicate()[0]
-            return out.strip()
+            out = subprocess.check_output(
+                [conf.env['PYTHON'][0], "-c",
+                     "try:\n"
+                     "  import pybindgen.version\n"
+                     "  print(pybindgen.__version__)\n"
+                     "except:\n"
+                     "  pass"],
+                universal_newlines=True).strip()
+            return out
         pybindgen_version = getVersion()
         if pybindgen_version == '': # version is not generated yet (e.g., cloned from git repo directly)
             subprocess.Popen([conf.env['PYTHON'][0], "setup.py", "--version"],
