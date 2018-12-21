@@ -26,11 +26,12 @@
 #include <map>
 #include <list>
 
-#include "ns3/object.h"
+#include "ns3/simple-ref-count.h"
 #include "ns3/node-container.h"
 
-
 namespace ns3 {
+
+class NetDevice;
 
 /**
  * \ingroup topology
@@ -40,7 +41,7 @@ namespace ns3 {
  * This interface perform the shared tasks among all possible input file readers.
  * Each different file format is handled by its own topology reader.
  */
-class TopologyReader : public Object
+class TopologyReader : public SimpleRefCount<TopologyReader>
 {
 
 public:
@@ -53,12 +54,14 @@ public:
    */
   class Link
   {
-public:
+  public:
     /**
      * \brief Constant iterator to scan the map of link attributes.
      */
     typedef std::map<std::string, std::string>::const_iterator ConstAttributesIterator;
 
+    Link (); // default constructor
+    
     /**
      * \brief Constructor.
      * \param [in] fromPtr Ptr to the node the link is originating from.
@@ -69,10 +72,23 @@ public:
     Link ( Ptr<Node> fromPtr, const std::string &fromName, Ptr<Node> toPtr, const std::string &toName );
 
     /**
+     * \brief Set netdevices associated with the link.
+     * \param from NetDevice associated with From node.
+     * \param to NetDevice associated with To node.
+     */
+    void
+    SetNetDevices (Ptr<NetDevice> from, Ptr<NetDevice> to);
+
+    /**
      * \brief Returns a Ptr<Node> to the "from" node of the link.
      * \return A Ptr<Node> to the "from" node of the link.
      */
     Ptr<Node> GetFromNode (void) const;
+    /**
+     * \brief Returns a Ptr<NetDevice> of the "from" node of the link.
+     * \return A Ptr<NetDevice> of the "from" node of the link.
+     */
+    Ptr<NetDevice> GetFromNetDevice (void) const;
     /**
      * \brief Returns the name of the "from" node of the link.
      * \return The name of the "from" node of the link.
@@ -83,6 +99,11 @@ public:
      * \return A Ptr<Node> to the "to" node of the link.
      */
     Ptr<Node> GetToNode (void) const;
+    /**
+     * \brief Returns a Ptr<NetDevice> of the "to" node of the link.
+     * \return A Ptr<NetDevice> of the "to" node of the link.
+     */
+    Ptr<NetDevice> GetToNetDevice (void) const;
     /**
      * \brief Returns the name of the "to" node of the link.
      * \return The name of the "to" node of the link.
@@ -120,24 +141,19 @@ public:
     ConstAttributesIterator AttributesEnd (void) const;
 
 private:
-    Link ();
     std::string m_fromName; //!< Name of the node the links originates from.
     Ptr< Node > m_fromPtr;  //!< The node the links originates from.
     std::string m_toName;   //!< Name of the node the links is directed to.
     Ptr< Node > m_toPtr;    //!< The node the links is directed to.
     std::map<std::string, std::string> m_linkAttr;  //!< Container of the link attributes (if any).
+    Ptr< NetDevice > m_fromNetDevice; //!< The NetDevice the link originates from.
+    Ptr< NetDevice > m_toNetDevice;   //!< The NetDevice the link is directed to.
   };
 
   /**
    * \brief Constant iterator to the list of the links.
    */
   typedef std::list< Link >::const_iterator ConstLinksIterator;
-
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId (void);
 
   TopologyReader ();
   virtual ~TopologyReader ();
@@ -197,6 +213,17 @@ private:
    */
   void AddLink (Link link);
 
+protected:
+  /**
+   * The name of the input file.
+   */
+  std::string m_fileName;
+
+  /**
+   * The container of the links between the nodes.
+   */
+  std::list<Link> m_linksList;
+
 private:
 
   /**
@@ -212,16 +239,6 @@ private:
    * \returns
    */
   TopologyReader& operator= (const TopologyReader&);
-
-  /**
-   * The name of the input file.
-   */
-  std::string m_fileName;
-
-  /**
-   * The container of the links between the nodes.
-   */
-  std::list<Link> m_linksList;
 
   // end class TopologyReader
 };
