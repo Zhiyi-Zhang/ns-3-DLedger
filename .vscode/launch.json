@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch from scratch",
+            "name": "(gdb) Launch from ledger",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/scratch/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/build/src/ndnSIM/examples/ns3-dev-ndn-dledger-3-debug",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -16,17 +16,18 @@
                 {
                     "name": "LD_LIBRARY_PATH",
                     "value": "./build/lib/"
-                }
+                },
+                {"name": "NS_LOG", "value": "ndn.peer"}
             ],
             "externalConsole": true,
-            "MIMode": "gdb",
+            "MIMode": "lldb",
             "setupCommands": [
                 {
-                    "description": "Enable pretty-printing for gdb",
+                    "description": "Enable pretty-printing for lldb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
          }
     ]
 }
