@@ -8,7 +8,7 @@
             "name": "(gdb) Launch from ledger",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/src/ndnSIM/examples/ns3-dev-ndn-dledger-3-debug",
+            "program": "${workspaceFolder}/build/src/ndnSIM/examples/ns3-dev-ndn-dledger-mpi-debug",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
